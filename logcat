@@ -1,0 +1,7 @@
+#!/bin/bash
+
+while [ true ]; do
+    adb logcat
+    notify-send "Clear logcat"
+    adb logcat -c /dev/null
+done

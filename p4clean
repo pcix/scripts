@@ -1,0 +1,9 @@
+#!/bin/bash
+
+tmp1=`mktemp`
+tmp2=`mktemp`
+time find . -type f | p4 -x - fstat 2>&1 > /dev/null | sed 's/ -.*$//' > $tmp1
+sed -e 's/ /\\ /g' $tmp1 > $tmp2
+#vim /tmp/list2
+xargs rm < $tmp2
+find -depth -type d -empty -exec rmdir {} \;

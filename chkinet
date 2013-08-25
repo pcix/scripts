@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Send one packet and wait for a two seconds
+ping ya.ru -w 2 -c 1
+if [ $? -ne 0 ]; then
+    echo 'Reconnecting...'
+    poff bca || pon bca
+else
+    echo 'Connetion exists!'
+fi

@@ -1,0 +1,28 @@
+#!/usr/bin/python
+
+import os, re, subprocess, shutil, sys, hashlib, tempfile, stat
+
+if len(sys.argv) < 2:
+    root_dir = os.getcwd()
+else:
+    root_dir = sys.argv[1]
+
+def updateDir(path):
+    if os.path.basename(path).startswith('.'):
+        return
+
+    items = os.listdir(path)
+    for item in items:
+        full_path = os.path.join(path, item)
+        if os.path.isdir(full_path):
+            if item == '.git':
+                os.chdir(path)
+                print path
+                os.system('git pull')
+            elif item == '.svn':
+                os.chdir(path)
+                print path
+                os.system('svn update')
+            updateDir(full_path)
+
+updateDir(os.getcwd())

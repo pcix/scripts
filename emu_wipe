@@ -1,0 +1,3 @@
+#!/bin/sh
+
+export http_proxy= && ~/bin/android-sdk-linux_x86/tools/emulator -avd android2.2 -partition-size 1000 -wipe-data

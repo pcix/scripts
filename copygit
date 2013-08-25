@@ -1,0 +1,24 @@
+#!/usr/bin/python
+
+import os
+import sys
+import shutil
+
+if len(sys.argv) < 2:
+    print "Please specify root dir"
+    sys.exit(1)
+
+root_path = os.path.abspath(sys.argv[1])
+root_len = len(root_path) + 1
+current_dir = os.getcwd()
+print current_dir
+
+for root_dir, dirs, files in os.walk(root_path):
+    if ".git" in dirs:
+        rel_path = root_dir[root_len:]
+
+        try:
+            shutil.copytree(os.path.join(root_dir, ".git"), os.path.join(current_dir, rel_path, ".git"))
+            print rel_path, "copied successfully."
+        except:
+            print "Copying error"
