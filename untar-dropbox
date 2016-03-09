@@ -1,0 +1,27 @@
+#!/usr/bin/python
+
+import os, re, subprocess, shutil, sys, hashlib, tempfile, stat
+
+if len(sys.argv) < 2:
+    print 'Please specify filename'
+    sys.exit(1)
+else:
+    filename = sys.argv[1]
+
+def getFile(path, name):
+    items = os.listdir(path)
+    backups = []
+    for item in items:
+        full_path = os.path.join(path, item)
+        if (item.startswith(name) and item.endswith('.tar.gz.gpg')):
+            backups.append(full_path)
+    backups.sort()
+    return backups[-1]
+
+file = getFile(os.path.join(os.environ['HOME'], 'Dropbox', 'Backup'), filename)
+print 'Untar file: ' + file
+
+archive = os.path.join(os.environ['HOME'], filename + '.tar.gz')
+os.system('rm -v ' + archive + ' && rm -rf ' + os.path.join(os.environ['HOME'], filename + '.bak') + ' && mv -v ' + os.path.join(os.environ['HOME'], filename) + ' ' + os.path.join(os.environ['HOME'], filename + '.bak'))
+os.system('gpg --output ' + archive + ' --decrypt ' + file)
+os.system('tar xvf ' + archive)
