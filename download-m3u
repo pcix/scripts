@@ -1,0 +1,52 @@
+#!/usr/bin/python
+
+import logging, os, sys, shutil, subprocess
+from optparse import OptionParser
+
+def main(argv = None):
+    usage = '''usage: %prog --playlist PlaylistFile [--dest Destination]'''
+
+    parser = OptionParser(usage)
+
+    parser.add_option('-p', '--playlist', action='store',
+                      dest='playlist', default=None,
+                      help='Playlist file')
+
+    parser.add_option('-d', '--dest', action='store',
+                      dest='dest', default=None,
+                      help='Destination folder')
+
+    global options
+    (options, args) = parser.parse_args()
+
+    if not options.playlist or not os.path.exists(options.playlist) or os.path.isdir(options.playlist):
+        print("Playlist file does not specified or does not exists")
+        sys.exit(1)
+    else:
+        options.playlist = os.path.abspath(options.playlist)
+
+    if not options.dest:
+        options.dest = os.path.abspath(".")
+
+    logging.basicConfig(filename = 'download-m3u.log', level = logging.DEBUG)
+
+    # Do work
+    num = 0
+    length = None
+    title = None
+    path = None
+
+    for line in open(options.playlist):
+        line = line.strip('\n')
+        if line.startswith('#EXTINF:'):
+            length, title = line.split('#EXTINF:')[1].split(',', 1)
+        elif len(line) > 0 and title:
+            path = line
+            num += 1
+            logging.debug('Download file: %d %s %s' % (num, title, path))
+            code = subprocess.call('wget "%s" -O "%s/%04d %s.mp3"' % (path, options.dest, num, title), shell = True)
+            if code != 0:
+                logging.warning('Failed to download file: %s' % title)
+
+if __name__ == '__main__':
+    main(sys.argv)
